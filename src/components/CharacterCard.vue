@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { type PropType, ref } from 'vue'
+import { computed, type PropType } from 'vue'
 import { type ResultData } from '@/types'
 
 const props = defineProps({
@@ -37,8 +37,9 @@ const props = defineProps({
   }
 )
 
-const statusClass = ref()
-statusClass.value = 'character-card__status--' + props.character.status.toLowerCase()
+const statusClass = computed(() => {
+  return `character-card__status--${props.character.status.toLowerCase()}`
+})
 </script>
 
 <style scoped lang="scss">
