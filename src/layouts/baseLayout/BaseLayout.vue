@@ -18,7 +18,14 @@
 
 
 <style scoped lang="scss">
+@import "@/assets/styles/colors";
 
+.header ,.footer{
+  display: flex;
+  justify-content: center;
+  height: 48px;
+  background-color: $dark-grey;
+}
 .container{
   max-width: 1220px;
   padding: 0 10px;
