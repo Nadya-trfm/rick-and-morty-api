@@ -1,6 +1,10 @@
 <template>
   <base-layout>
     <section class="content">
+      <filter-buttons
+        :character-options="characterOptions"
+        @update-character-options="updateCharacterOptions"
+      />
       <ul>
         <li
           v-for="character in characters"
@@ -20,9 +24,10 @@
 
 <script setup lang="ts">
 import BaseLayout from '@/layouts/baseLayout/BaseLayout.vue'
-import { onMounted, type Ref, ref, toValue } from 'vue'
+import { onMounted, reactive, type Ref, ref, toValue, watch } from 'vue'
 import { getCharactersData } from '@/services/api'
 import {
+  type CharacterOptions,
   type CharactersData,
   type PageInfo,
   type ResultData
@@ -30,18 +35,20 @@ import {
   from '@/types'
 import CharacterCard from '@/components/CharacterCard.vue'
 import Pagination from '@/components/Pagination.vue'
+import FilterButtons from '@/components/FilterButtons.vue'
 
 const charactersData = ref<CharactersData>()
 const isLoading = ref(false)
 const currentPage = ref(1)
 const characters = ref<ResultData[]>()
 const pageInfo = ref<PageInfo | null>(null)
+let characterOptions = reactive<CharacterOptions>({ name: '', status: '' })
 
 async function changePage(page: number | Ref<number>) {
   isLoading.value = true
 
   try {
-    charactersData.value = await getCharactersData(page)
+    charactersData.value = await getCharactersData(page, characterOptions.status, characterOptions.name)
     characters.value = charactersData.value.results
     pageInfo.value = charactersData.value.info
     currentPage.value = toValue(page)
@@ -50,6 +57,14 @@ async function changePage(page: number | Ref<number>) {
   } finally {
     isLoading.value = false
   }
+}
+
+watch(characterOptions, () => {
+  changePage(currentPage)
+})
+
+function updateCharacterOptions(newCharacterOptions: CharacterOptions) {
+ Object.assign(characterOptions,newCharacterOptions)
 }
 
 onMounted(() => {

@@ -28,3 +28,8 @@ interface LinkData {
   name: string,
   url: string
 }
+
+export interface CharacterOptions{
+  name: string,
+  status: string
+}
