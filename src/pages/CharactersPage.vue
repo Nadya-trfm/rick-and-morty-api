@@ -5,19 +5,22 @@
         :character-options="characterOptions"
         @update-character-options="updateCharacterOptions"
       />
-      <ul>
-        <li
-          v-for="character in characters"
-          :key="character.id"
-        >
-          <character-card :character="character" />
-        </li>
-      </ul>
-      <pagination
-        :page-info="pageInfo"
-        :current-page="currentPage"
-        @change-page="changePage"
-      ></pagination>
+      <error-request v-if="isError" />
+      <template v-else>
+        <ul>
+          <li
+            v-for="character in characters"
+            :key="character.id"
+          >
+            <character-card :character="character" />
+          </li>
+        </ul>
+        <pagination
+          :page-info="pageInfo"
+          :current-page="currentPage"
+          @change-page="changePage"
+        ></pagination>
+      </template>
     </section>
   </base-layout>
 </template>
@@ -36,6 +39,7 @@ import {
 import CharacterCard from '@/components/CharacterCard.vue'
 import Pagination from '@/components/Pagination.vue'
 import FilterButtons from '@/components/FilterButtons.vue'
+import ErrorRequest from '@/components/ErrorRequest.vue'
 
 const charactersData = ref<CharactersData>()
 const isLoading = ref(false)
@@ -43,6 +47,7 @@ const currentPage = ref(1)
 const characters = ref<ResultData[]>()
 const pageInfo = ref<PageInfo | null>(null)
 let characterOptions = reactive<CharacterOptions>({ name: '', status: '' })
+const isError = ref(false)
 
 async function changePage(page: number | Ref<number>) {
   isLoading.value = true
@@ -52,8 +57,10 @@ async function changePage(page: number | Ref<number>) {
     characters.value = charactersData.value.results
     pageInfo.value = charactersData.value.info
     currentPage.value = toValue(page)
+    isError.value = false
   } catch (e) {
     console.error(e)
+    isError.value = true
   } finally {
     isLoading.value = false
   }
