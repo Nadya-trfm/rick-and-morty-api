@@ -28,7 +28,7 @@ import type { PageInfo } from '@/types'
 
 const props = defineProps({
     pageInfo: {
-      type: [Object, null] as PropType<PageInfo>,
+      type: Object as PropType<PageInfo | null>,
       required: true
     },
     currentPage: {
